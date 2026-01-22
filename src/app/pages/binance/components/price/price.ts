@@ -1,6 +1,6 @@
 import { Component, inject, OnDestroy } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
-import { BinanceService } from '../../binance.service';
+import { BinanceService } from '../../../../services/binance.service';
 
 @Component({
   selector: 'app-price',

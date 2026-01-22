@@ -1,0 +1,54 @@
+<div 
+      class="bg-white p-6 rounded-xl border-2 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+      [class.border-green-500]="isPositive()"
+      [class.border-red-500]="isNegative()"
+      [class.border-gray-200]="!isPositive() && !isNegative()"
+    >
+      <!-- Header -->
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-xl font-bold text-gray-900">
+          {{ symbol() | cryptoSymbol }}
+        </h3>
+        @if (priceChange()) {
+          <span 
+            class="px-3 py-1 rounded-lg text-sm font-semibold"
+            [class.bg-green-100]="isPositive()"
+            [class.text-green-700]="isPositive()"
+            [class.bg-red-100]="isNegative()"
+            [class.text-red-700]="isNegative()"
+          >
+            {{ priceChange() | cryptoPercent }}
+          </span>
+        }
+      </div>
+      
+      <!-- Price -->
+      @if (currentPrice()) {
+        <div class="space-y-4">
+          <div class="text-3xl font-bold text-gray-900">
+            ${{ currentPrice() | cryptoPrice }}
+          </div>
+          
+          @if (ticker()) {
+            <div class="space-y-2 text-sm">
+              <div class="flex justify-between">
+                <span class="text-gray-600">24h High:</span>
+                <span class="font-semibold text-gray-900">
+                  ${{ ticker()!.highPrice | cryptoPrice }}
+                </span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">24h Low:</span>
+                <span class="font-semibold text-gray-900">
+                  ${{ ticker()!.lowPrice | cryptoPrice }}
+                </span>
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="flex items-center justify-center py-8">
+          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+      }
+    </div>
