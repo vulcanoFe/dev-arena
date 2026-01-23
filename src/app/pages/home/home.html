@@ -1,88 +1,84 @@
-    <div class="min-h-screen bg-gray-50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
-        <!-- Header -->
-        <header class="text-center mb-12">
-          <h1 class="text-5xl font-extrabold mb-3 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-            Crypto Tracker
-          </h1>
-          <p class="text-gray-600 text-lg">
-            Monitor real-time cryptocurrency prices
-          </p>
-        </header>
-
-        <!-- Search Bar -->
-        <div class="max-w-2xl mx-auto mb-8">
-          <div class="relative">
-            <input
-              type="text"
-              [value]="searchQuery()"
-              (input)="onSearch($any($event.target).value)"
-              placeholder="Cerca una crypto (es. BTC, ETH)..."
-              class="w-full px-4 py-3 pr-12 text-lg border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
-            />
-            @if (searchQuery()) {
-              <button 
-                (click)="clearSearch()" 
-                class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-full transition-colors"
-              >
-                ×
-              </button>
-            }
-          </div>
-          
-          @if (isSearching()) {
-            <div class="text-center mt-3 text-gray-500">
-              Ricerca in corso...
+<div class="min-h-screen bg-gray-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <!-- Header -->
+    <header class="text-center mb-12">
+      <h1 class="text-5xl font-extrabold mb-3 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+        Crypto Tracker
+      </h1>
+      <p class="text-gray-600 text-lg">
+        Monitor real-time cryptocurrency prices
+      </p>
+    </header>
+    <!-- Search Bar -->
+    <div class="max-w-2xl mx-auto mb-8">
+      <div class="relative">
+        <input
+          type="text"
+          [value]="searchQuery()"
+          (input)="onSearch($any($event.target).value)"
+          placeholder="Cerca una crypto (es. BTC, ETH)..."
+          class="w-full px-4 py-3 pr-12 text-lg border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+        />
+        @if (searchQuery()) {
+          <button 
+            (click)="clearSearch()" 
+            class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-full transition-colors"
+          >
+            ×
+          </button>
+        }
+      </div>
+      
+      @if (isSearching()) {
+        <div class="text-center mt-3 text-gray-500">
+          Ricerca in corso...
+        </div>
+      }
+    </div>
+    <!-- Search Results -->
+    @if (!showPopular() && searchResults().length > 0) {
+      <section class="mb-8">
+        <h2 class="text-2xl font-bold mb-4 text-gray-900">
+          Risultati della ricerca
+        </h2>
+        <div class="space-y-2">
+          @for (symbol of searchResults(); track symbol) {
+            <div 
+              (click)="navigateToDetail(symbol)"
+              class="bg-white p-4 rounded-lg border-2 border-gray-200 hover:border-blue-500 cursor-pointer transition-all hover:translate-x-1 flex justify-between items-center"
+            >
+              <span class="font-semibold text-gray-900">{{ symbol }}</span>
+              <span class="text-blue-500 text-xl">→</span>
             </div>
           }
         </div>
-
-        <!-- Search Results -->
-        @if (!showPopular() && searchResults().length > 0) {
-          <section class="mb-8">
-            <h2 class="text-2xl font-bold mb-4 text-gray-900">
-              Risultati della ricerca
-            </h2>
-            <div class="space-y-2">
-              @for (symbol of searchResults(); track symbol) {
-                <div 
-                  (click)="navigateToDetail(symbol)"
-                  class="bg-white p-4 rounded-lg border-2 border-gray-200 hover:border-blue-500 cursor-pointer transition-all hover:translate-x-1 flex justify-between items-center"
-                >
-                  <span class="font-semibold text-gray-900">{{ symbol }}</span>
-                  <span class="text-blue-500 text-xl">→</span>
-                </div>
-              }
-            </div>
-          </section>
-        }
-
-        @if (!showPopular() && searchResults().length === 0 && !isSearching() && searchQuery()) {
-          <div class="text-center py-12">
-            <p class="text-gray-500 text-lg">
-              Nessun risultato trovato per "{{ searchQuery() }}"
-            </p>
-          </div>
-        }
-
-        <!-- Popular Cryptos -->
-        @if (showPopular()) {
-          <section>
-            <h2 class="text-2xl font-bold mb-6 text-gray-900">
-              Crypto più popolari
-            </h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              @for (symbol of popularCryptos; track symbol) {
-                <app-crypto-card 
-                  [symbol]="symbol"
-                  (click)="navigateToDetail(symbol)"
-                  class="cursor-pointer"
-                />
-              }
-            </div>
-          </section>
-        }
-        
+      </section>
+    }
+    @if (!showPopular() && searchResults().length === 0 && !isSearching() && searchQuery()) {
+      <div class="text-center py-12">
+        <p class="text-gray-500 text-lg">
+          Nessun risultato trovato per "{{ searchQuery() }}"
+        </p>
       </div>
-    </div>
+    }
+    <!-- Popular Cryptos -->
+    @if (showPopular()) {
+      <section>
+        <h2 class="text-2xl font-bold mb-6 text-gray-900">
+          Crypto più popolari
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          @for (symbol of popularCryptos; track symbol) {
+            <app-crypto-card 
+              [symbol]="symbol"
+              (click)="navigateToDetail(symbol)"
+              class="cursor-pointer"
+            />
+          }
+        </div>
+      </section>
+    }
+    
+  </div>
+</div>
