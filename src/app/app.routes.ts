@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { Binance } from './pages/binance/binance';
 
 export const routes: Routes = [
   {
