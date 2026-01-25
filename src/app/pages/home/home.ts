@@ -16,7 +16,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
 // RxJS: Subject per emettere eventi + operatori per la ricerca
-import { Subject, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
+import { Subject, debounceTime, distinctUntilChanged, of, switchMap } from 'rxjs';
 
 // Utility Angular per convertire Observable → Signal
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -68,7 +68,7 @@ export class HomeComponent {
         // Se la query è vuota o troppo corta
         if (!query || query.length < 2) {
           this.isSearching.set(false); // stop loader
-          return []; // nessuna chiamata API
+          return of([]); // nessuna chiamata API
         }
 
         // Indica che la ricerca è in corso

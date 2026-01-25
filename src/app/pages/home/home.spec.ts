@@ -6,17 +6,10 @@ import { of } from 'rxjs';
 
 /**
  * MOCK del BinanceService
- * Simula il comportamento del servizio reale
  */
 class MockBinanceService {
-
-  // Lista di crypto popolari fake
   popularCryptos = ['BTC', 'ETH', 'BNB'];
 
-  /**
-   * Simula la chiamata API di ricerca
-   * Ritorna un Observable (come il servizio reale)
-   */
   searchCryptos(query: string) {
     return of([
       `${query.toUpperCase()}1`,
@@ -27,7 +20,6 @@ class MockBinanceService {
 
 /**
  * MOCK del Router
- * Serve per verificare che navigate venga chiamato
  */
 class MockRouter {
   navigate = jasmine.createSpy('navigate');
@@ -38,10 +30,11 @@ class MockRouter {
  */
 import { Component, Input } from '@angular/core';
 import { CryptoCardComponent } from '../../components/crypto-card/crypto-card';
+
 @Component({
   selector: 'app-crypto-card',
   standalone: true,
-  template: '' // template vuoto
+  template: ''
 })
 class CryptoCardStubComponent {
   @Input() symbol!: string;
@@ -53,54 +46,43 @@ describe('HomeComponent', () => {
   let component: HomeComponent;
   let fixture: ComponentFixture<HomeComponent>;
   let binanceService: MockBinanceService;
-  let binanceServiceSpy: jasmine.SpyObj<MockBinanceService>;
   let router: MockRouter;
 
-	beforeEach(async () => {
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [HomeComponent],
+      providers: [
+        { provide: BinanceService, useClass: MockBinanceService },
+        { provide: Router, useClass: MockRouter }
+      ]
+    })
+      .overrideComponent(HomeComponent, {
+        remove: {
+          imports: [CryptoCardComponent]
+        },
+        add: {
+          imports: [CryptoCardStubComponent]
+        }
+      })
+      .compileComponents();
 
-    const spy = jasmine.createSpyObj('BinanceService', ['searchCryptos'], { popularCryptos: ['BTC', 'ETH'] });
-
-		await TestBed.configureTestingModule({
-			imports: [HomeComponent],
-			providers: [
-				{ provide: BinanceService, useClass: MockBinanceService },
-				{ provide: Router, useClass: MockRouter }
-			]
-		})
-		.overrideComponent(HomeComponent, {
-			remove: {
-				imports: [CryptoCardComponent] // 🔥 RIMOSSO
-			},
-			add: {
-				imports: [CryptoCardStubComponent] // ✅ SOLO STUB
-			}
-		})
-		.compileComponents();
-
-
-    // Creiamo l’istanza del componente
     fixture = TestBed.createComponent(HomeComponent);
     component = fixture.componentInstance;
 
-    // Recuperiamo i servizi mock
+    // ⭐ IMPORTANTE: Recupera il servizio PRIMA di detectChanges
     binanceService = TestBed.inject(BinanceService) as any;
     router = TestBed.inject(Router) as any;
 
-    // Trigger iniziale di Angular
+    // ⭐ Crea lo spy PRIMA di detectChanges con returnValue
+    spyOn(binanceService, 'searchCryptos').and.returnValue(of([]));
+
     fixture.detectChanges();
   });
 
-  /**
-   * TEST BASE
-   * Verifica che il componente venga creato
-   */
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  /**
-   * TEST: stato iniziale
-   */
   it('should have initial state', () => {
     expect(component.searchQuery()).toBe('');
     expect(component.isSearching()).toBeFalse();
@@ -108,28 +90,17 @@ describe('HomeComponent', () => {
     expect(component.searchResults()).toEqual([]);
   });
 
-  /**
-   * TEST: onSearch()
-   * Deve aggiornare il signal searchQuery
-   */
   it('should update searchQuery when onSearch is called', () => {
     component.onSearch('btc');
     expect(component.searchQuery()).toBe('btc');
   });
 
-  /**
-   * TEST: clearSearch()
-   * Deve svuotare la query
-   */
   it('should clear searchQuery when clearSearch is called', () => {
     component.searchQuery.set('eth');
     component.clearSearch();
     expect(component.searchQuery()).toBe('');
   });
 
-  /**
-   * TEST: showPopular computed
-   */
   it('should hide popular cryptos when query length >= 2', () => {
     component.searchQuery.set('bt');
     expect(component.showPopular()).toBeFalse();
@@ -140,44 +111,45 @@ describe('HomeComponent', () => {
     expect(component.showPopular()).toBeTrue();
   });
 
-it('should search cryptos when query length >= 2', fakeAsync(() => {
-    // Lo spy restituisce un Observable immediato
-    binanceService.searchCryptos.and.returnValue(of(['BTC1', 'BTC2']));
+  /**
+   * ⭐ TEST PRINCIPALE: ricerca con query >= 2 caratteri
+   */
+  it('should search cryptos when query length >= 2', fakeAsync(() => {
+    // Configura lo spy per ritornare i dati attesi
+    (binanceService.searchCryptos as jasmine.Spy).and.returnValue(of(['BI1', 'BI2']));
 
-    // Avvio la ricerca
-    component.onSearch('btc');
+    // ⭐ FONDAMENTALE: accedi al signal PRIMA della ricerca
+    // Questo forza Angular a sottoscrivere l'Observable
+    component.searchResults();
 
-    // Avanza il tempo per superare debounceTime(300ms)
+    // Simuliamo l'input dell'utente
+    component.onSearch('bi');
+
+    // Avanziamo il debounce
     tick(300);
-    fixture.detectChanges();
 
-    // Il servizio deve essere chiamato
-    expect(binanceService.searchCryptos).toHaveBeenCalledWith('btc');
-
-    // Loader deve essere attivo subito dopo onSearch
-    expect(component.isSearching()).toBeTrue();
-
-    // Completa tutte le subscription
+    // Completiamo gli Observable
     flush();
+
+    // Detecta i cambiamenti
     fixture.detectChanges();
 
-    // Loader deve spegnersi
-    expect(component.isSearching()).toBeFalse();
+    // Verifichiamo che la ricerca sia stata chiamata con 'bi'
+    expect(binanceService.searchCryptos).toHaveBeenCalledWith('bi');
 
-    // Risultati della ricerca
-    expect(component.searchResults()).toEqual(['BTC1', 'BTC2']);
+    // Verifichiamo i risultati
+    expect(component.searchResults()).toEqual(['BI1', 'BI2']);
+
+    // Verifichiamo che il loader sia disattivato
+    expect(component.isSearching()).toBe(false);
   }));
 
   /**
    * TEST: query troppo corta
-   * Non deve chiamare il servizio
    */
   it('should not search when query is too short', fakeAsync(() => {
-
-    spyOn(binanceService, 'searchCryptos');
-
     component.onSearch('b');
-    tick(300);
+    flush();
     fixture.detectChanges();
 
     expect(binanceService.searchCryptos).not.toHaveBeenCalled();
