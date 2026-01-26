@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { PopularCryptos } from './popular-cryptos';
+import { BinanceService } from '../../services/binance.service';
+import { BinanceServiceMock } from '../search-crypto/search-crypto.spec';
 
 describe('PopularCryptos', () => {
   let component: PopularCryptos;
@@ -8,7 +10,8 @@ describe('PopularCryptos', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PopularCryptos]
+      imports: [PopularCryptos],
+			providers: [{ provide: BinanceService, useClass: BinanceServiceMock }]
     })
     .compileComponents();
 
