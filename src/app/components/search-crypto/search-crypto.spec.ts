@@ -42,22 +42,22 @@ describe('SearchCrypto', () => {
     expect(component).toBeTruthy();
   }));
 
-  it('should call searchCryptos after debounce', fakeAsync(() => {
-    binanceService.searchCryptos.and.returnValue(
-      of(['BTCUSDT', 'ETHUSDT'])
-    );
+	it('should call searchCryptos after debounce', fakeAsync(() => {
+		binanceService.searchCryptos.and.returnValue(
+			of(['BTCUSDT', 'ETHUSDT'])
+		);
 
-    fixture.detectChanges();
-    tick(); // effect iniziale
+		fixture.detectChanges();
+		tick();            // ⚠️ effect iniziale
 
-    component.onSearch('BT');
-    tick(300); // debounce
+		component.onSearch('BT');
+		tick(300);         // ⚠️ debounce
+		tick();            // ⚠️ flush emissione
 
-    expect(binanceService.searchCryptos).toHaveBeenCalledWith('BT');
-    expect(component.searchResults()).toEqual(['BTCUSDT', 'ETHUSDT']);
-    expect(component.isSearching()).toBeFalse();
-    expect(component.searched()).toBeTrue();
-  }));
+		expect(binanceService.searchCryptos).toHaveBeenCalledWith('BT');
+		expect(component.searchResults()).toEqual(['BTCUSDT', 'ETHUSDT']);
+		expect(component.searched()).toBeTrue();
+	}));
 
   it('should not search if query length < 2', fakeAsync(() => {
     fixture.detectChanges();
@@ -70,43 +70,49 @@ describe('SearchCrypto', () => {
     expect(component.searchResults()).toEqual([]);
   }));
 
-  it('should set isSearching true while searching', fakeAsync(() => {
-    const subject = new Subject<string[]>();
-    binanceService.searchCryptos.and.returnValue(subject.asObservable());
+	it('should set isSearching true while searching', fakeAsync(() => {
+		const subject = new Subject<string[]>();
+		binanceService.searchCryptos.and.returnValue(subject.asObservable());
 
-    fixture.detectChanges();
-    tick();
+		fixture.detectChanges();
+		tick(); // effect iniziale
 
-    component.onSearch('ETH');
-    tick(300);
+		component.onSearch('ETH');
 
-    expect(component.isSearching()).toBeTrue();
+		tick(300); // debounce → switchMap
+		tick();    // flush
 
-    subject.next(['ETHUSDT']);
-    subject.complete();
-    tick();
+		expect(component.isSearching()).toBeTrue();
 
-    expect(component.isSearching()).toBeFalse();
-    expect(component.searchResults()).toEqual(['ETHUSDT']);
-  }));
+		subject.next(['ETHUSDT']);
+		subject.complete();
+		tick();
 
-  it('should clear search', fakeAsync(() => {
-    binanceService.searchCryptos.and.returnValue(of(['BTCUSDT']));
+		expect(component.isSearching()).toBeFalse();
+		expect(component.searchResults()).toEqual(['ETHUSDT']);
+	}));
 
-    fixture.detectChanges();
-    tick();
+	it('should clear search', fakeAsync(() => {
+		binanceService.searchCryptos.and.returnValue(of(['BTCUSDT']));
 
-    component.onSearch('BTC');
-    tick(300);
+		fixture.detectChanges();
+		tick();
 
-    expect(component.searchResults().length).toBe(1);
+		component.onSearch('BTC');
+		tick(300);
+		tick();
 
-    component.clearSearch();
-    tick(300);
+		expect(component.searchResults().length).toBe(1);
 
-    expect(component.searchQuery()).toBe('');
-    expect(component.searchResults()).toEqual([]);
-  }));
+		component.clearSearch();
+
+		tick(300); // debounce per query ''
+		tick();
+
+		expect(component.searchQuery()).toBe('');
+		expect(component.searchResults()).toEqual([]);
+	}));
+
 
   it('should navigate to detail', () => {
     component.navigateToDetail('BTCUSDT');
