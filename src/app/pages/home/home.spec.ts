@@ -40,7 +40,6 @@ class CryptoCardStubComponent {
   @Input() symbol!: string;
 }
 
-
 describe('HomeComponent', () => {
 
   let component: HomeComponent;
@@ -69,11 +68,11 @@ describe('HomeComponent', () => {
     fixture = TestBed.createComponent(HomeComponent);
     component = fixture.componentInstance;
 
-    // ⭐ IMPORTANTE: Recupera il servizio PRIMA di detectChanges
+    // ⭐ Recupera il servizio PRIMA di detectChanges
     binanceService = TestBed.inject(BinanceService) as any;
     router = TestBed.inject(Router) as any;
 
-    // ⭐ Crea lo spy PRIMA di detectChanges con returnValue
+    // ⭐ Crea lo spy PRIMA di detectChanges
     spyOn(binanceService, 'searchCryptos').and.returnValue(of([]));
 
     fixture.detectChanges();
@@ -113,31 +112,38 @@ describe('HomeComponent', () => {
 
   /**
    * ⭐ TEST PRINCIPALE: ricerca con query >= 2 caratteri
+   * 
+   * IL PROBLEMA ERA:
+   * - toSignal non crea la sottoscrizione all'Observable se nessuno legge il signal
+   * - Leggere searchResults() DOPO onSearch() non attiva la sottoscrizione
+   * - Bisogna leggere il signal PRIMA di trigger la ricerca
    */
   it('should search cryptos when query length >= 2', fakeAsync(() => {
     // Configura lo spy per ritornare i dati attesi
     (binanceService.searchCryptos as jasmine.Spy).and.returnValue(of(['BI1', 'BI2']));
 
-    // ⭐ FONDAMENTALE: accedi al signal PRIMA della ricerca
-    // Questo forza Angular a sottoscrivere l'Observable
-    component.searchResults();
+    // ⭐ FONDAMENTALE: Accedi a searchResults() PRIMA di onSearch()
+    // Questo forza toSignal a sottoscriversi all'Observable
+    // Senza questa riga, l'Observable non è mai attivo!
+    const initialResults = component.searchResults();
+    console.log('Initial results:', initialResults);
 
     // Simuliamo l'input dell'utente
     component.onSearch('bi');
 
-    // Avanziamo il debounce
+    // Avanziamo il debounce (300ms)
     tick(300);
 
-    // Completiamo gli Observable
+    // Completiamo gli Observable pendenti
     flush();
 
-    // Detecta i cambiamenti
+    // Detecta i cambiamenti nel template
     fixture.detectChanges();
 
-    // Verifichiamo che la ricerca sia stata chiamata con 'bi'
+    // ⭐ Verifichiamo che la ricerca sia stata chiamata con 'bi'
     expect(binanceService.searchCryptos).toHaveBeenCalledWith('bi');
 
-    // Verifichiamo i risultati
+    // ⭐ Verifichiamo i risultati - leggiamo di nuovo il signal
     expect(component.searchResults()).toEqual(['BI1', 'BI2']);
 
     // Verifichiamo che il loader sia disattivato
@@ -148,7 +154,11 @@ describe('HomeComponent', () => {
    * TEST: query troppo corta
    */
   it('should not search when query is too short', fakeAsync(() => {
+    // Accedi al signal PRIMA
+    component.searchResults();
+
     component.onSearch('b');
+    tick(300);
     flush();
     fixture.detectChanges();
 
