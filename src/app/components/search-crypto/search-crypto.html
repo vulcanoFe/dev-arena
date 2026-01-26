@@ -1,0 +1,64 @@
+<div class="relative">
+
+	<!-- Input di ricerca 
+	Binding one-way dal signal
+	Aggiorna searchQuery ad ogni digitazione-->
+	<input
+		type="text"
+		[value]="searchQuery()"
+		(input)="onSearch($any($event.target).value)"
+		placeholder="Cerca una crypto (es. BTC, ETH)..."
+		class="w-full rounded-xl border-2 border-slate-200 bg-white px-4 py-3 pr-12 text-lg transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-blue-400 dark:focus:ring-blue-800"
+	/>
+
+	<!-- Bottone X visibile solo se c’è testo -->
+	@if (searchQuery()) {
+		<button 
+			(click)="clearSearch()" 
+			class="absolute right-2 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-red-500 text-white transition-colors hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700"
+		>
+			×
+		</button>
+	}
+</div>
+
+<!-- Messaggio di caricamento -->
+@if (isSearching()) {
+	<div class="mt-3 text-center text-slate-500 dark:text-slate-400">
+		Ricerca in corso...
+	</div>
+}
+
+<!-- ================= RISULTATI DI RICERCA ================= -->
+@if (searchResults().length > 0) {
+	<section>
+		<h2 class="my-4 text-2xl font-bold">
+			Risultati della ricerca
+		</h2>
+
+		<div class="space-y-2">
+			<!-- Ciclo sui risultati -->
+			@for (symbol of searchResults(); track symbol) {
+				<div 
+					(click)="navigateToDetail(symbol)"
+					class="flex cursor-pointer items-center justify-between rounded-lg border-2 border-slate-200 bg-white p-4 transition-all hover:translate-x-1 hover:border-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-blue-400"
+				>
+					<!-- Simbolo crypto -->
+					<span class="font-semibold">{{ symbol }}</span>
+
+					<!-- Freccia -->
+					<span class="text-xl">→</span>
+				</div>
+			}
+		</div>
+	</section>
+}
+
+<!-- ================= NESSUN RISULTATO ================= -->
+@if (searchResults().length === 0 && !isSearching() && searched()) {
+	<div class="py-12 text-center">
+		<p class="text-lg text-slate-500">
+			Nessun risultato trovato per "{{ searchQuery() }}"
+		</p>
+	</div>
+}
