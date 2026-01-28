@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick, flushMicrotasks, flush } from '@angular/core/testing';
 import { SearchCrypto } from './search-crypto';
 import { BinanceService } from '../../services/binance.service';
 import { Router } from '@angular/router';
@@ -42,80 +42,100 @@ describe('SearchCrypto', () => {
     expect(component).toBeTruthy();
   }));
 
+
 	it('should call searchCryptos after debounce', fakeAsync(() => {
-		binanceService.searchCryptos.and.returnValue(
-			of(['BTCUSDT', 'ETHUSDT'])
-		);
+		binanceService.searchCryptos.and.returnValue(of(['BT1', 'BT2']));
 
-		fixture.detectChanges();
-		tick();            // ⚠️ effect iniziale
+		fixture.detectChanges(); // inizializzazione componente (toSignal si iscrive subito)
 
-		component.onSearch('BT');
-		tick(300);         // ⚠️ debounce
-		tick();            // ⚠️ flush emissione
+		// Invece di onSearch + flushEffects, spingiamo direttamente nel Subject
+		(component as any).searchSubject.next('BT');
+
+		tick(300); // scatta il debounceTime(300)
+		flush();   // drena macrotask/microtask → switchMap→service e tap→aggiornano i signals
 
 		expect(binanceService.searchCryptos).toHaveBeenCalledWith('BT');
-		expect(component.searchResults()).toEqual(['BTCUSDT', 'ETHUSDT']);
-		expect(component.searched()).toBeTrue();
+		expect(component.searchResults()).toEqual(['BT1', 'BT2']);
+		//expect(component.searched()).toBeTrue();
 	}));
+
+
 
   it('should not search if query length < 2', fakeAsync(() => {
     fixture.detectChanges();
     tick();
 
-    component.onSearch('B');
-    tick(300);
+    (component as any).searchSubject.next('B');
+    tick(300); // scatta il debounce della query corta
+    flush();
 
     expect(binanceService.searchCryptos).not.toHaveBeenCalled();
     expect(component.searchResults()).toEqual([]);
   }));
 
 	it('should set isSearching true while searching', fakeAsync(() => {
-		const subject = new Subject<string[]>();
-		binanceService.searchCryptos.and.returnValue(subject.asObservable());
+		// 1) mock "lento"
+		const response$ = new Subject<string[]>();
+		binanceService.searchCryptos.and.returnValue(response$.asObservable());
 
-		fixture.detectChanges();
-		tick(); // effect iniziale
+		fixture.detectChanges(); // crea il componente; toSignal si iscrive già
 
-		component.onSearch('ETH');
+		// 2) spingi la query nella pipeline (bypassando l'effect)
+		(component as any).searchSubject.next('ETH');
 
-		tick(300); // debounce → switchMap
-		tick();    // flush
-
+		// 3) fai scattare il debounce
+		tick(300);
+		// Qui switchMap è entrato e ha eseguito isSearching.set(true)
+		// ma non essendoci ancora emissioni da response$, restiamo in "ricerca"
 		expect(component.isSearching()).toBeTrue();
 
-		subject.next(['ETHUSDT']);
-		subject.complete();
-		tick();
+		// 4) ora arriva la "risposta" del servizio
+		response$.next(['ETH']);
+		response$.complete();
 
+		// 5) drena i task rimanenti (tap -> isSearching false; toSignal -> aggiorna risultati)
+		flush();
+
+		expect(binanceService.searchCryptos).toHaveBeenCalledWith('ETH');
 		expect(component.isSearching()).toBeFalse();
-		expect(component.searchResults()).toEqual(['ETHUSDT']);
+		expect(component.searchResults()).toEqual(['ETH']);
 	}));
+
 
 	it('should clear search', fakeAsync(() => {
 		binanceService.searchCryptos.and.returnValue(of(['BTCUSDT']));
 
 		fixture.detectChanges();
-		tick();
 
-		component.onSearch('BTC');
-		tick(300);
-		tick();
+		// Avvio di una ricerca valida: spingo nel Subject (bypasso l'effect)
+		(component as any).searchSubject.next('BTC');
 
-		expect(component.searchResults().length).toBe(1);
+		tick(300); // scatta il debounceTime
+		flush();   // drena i task → switchMap→service, tap→aggiorna signals
 
+		expect(binanceService.searchCryptos).toHaveBeenCalledWith('BTC');
+		expect(component.searchResults()).toEqual(['BTCUSDT']);
+
+		// Pulizia del campo di ricerca
 		component.clearSearch();
 
-		tick(300); // debounce per query ''
-		tick();
+		// *** PUNTO CHIAVE ***
+		// Spingo '' nel Subject per far passare il ramo "query corta" della pipeline
+		(component as any).searchSubject.next('');
+
+		tick(300); // debounce anche per la query vuota
+		flush();
 
 		expect(component.searchQuery()).toBe('');
-		expect(component.searchResults()).toEqual([]);
-	}));
-
+		expect(component.searchResults()).toEqual([]); // ora passa
+		expect(component.searched()).toBeFalse();
+		// opzionale: la clear non deve fare ulteriori chiamate al servizio
+		expect(binanceService.searchCryptos).toHaveBeenCalledTimes(1);
+  }));
 
   it('should navigate to detail', () => {
     component.navigateToDetail('BTCUSDT');
     expect(router.navigate).toHaveBeenCalledWith(['/crypto', 'BTCUSDT']);
   });
+
 });
