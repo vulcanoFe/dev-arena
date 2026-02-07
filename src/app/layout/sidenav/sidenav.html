@@ -8,16 +8,21 @@
 
 <!-- SIDENAV -->
 <div 
-  class="fixed top-0 left-0 h-full w-64 bg-white shadow-xl z-50 dark:bg-slate-800
-        transform transition-transform duration-300"
+  class="fixed top-0 left-0 h-full w-64 bg-white shadow-xl z-50 dark:bg-slate-800 transform transition-transform duration-300"
   [class.-translate-x-full]="!isOpen()"
   [class.translate-x-0]="isOpen()">
 
   <div class="p-4 font-bold border-b">Menu</div>
 
   <nav class="p-4 space-y-3">
-    <button class="block p-2 w-full rounded hover:bg-gray-100 dark:hover:bg-slate-500">Home</button>
-    <button class="block p-2 w-full rounded hover:bg-gray-100 dark:hover:bg-slate-500">Crypto</button>
-    <button class="block p-2 w-full rounded hover:bg-gray-100 dark:hover:bg-slate-500">Settings</button>
+		@for (item of menuItems(); track item.path) {
+			<button
+				(click)="navigate(item.path)"
+				class="block p-2 w-full rounded text-left hover:bg-gray-100 dark:hover:bg-slate-500 transition"
+			>
+				{{ item.text }}
+			</button>
+		}
   </nav>
+
 </div>
