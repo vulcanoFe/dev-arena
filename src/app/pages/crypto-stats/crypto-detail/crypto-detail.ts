@@ -8,6 +8,7 @@ import { CryptoPercentPipe } from '../pipes/crypto-percent-pipe';
 import { CryptoSymbolPipe } from '../pipes/crypto-symbol-pipe';
 import { CryptoVolumePipe } from '../pipes/crypto-volume-pipe';
 import { BinanceService } from '../services/binance.service';
+import { CRYPTO_STATS_PATHS } from '../crypto-stats.routes';
 
 interface PriceHistory {
   price: number;
@@ -129,7 +130,7 @@ export class CryptoDetailComponent implements OnDestroy {
   }
 
   goBack(): void {
-    this.router.navigate(['/']);
+    this.router.navigate([CRYPTO_STATS_PATHS.HOME]);
   }
 
   ngOnDestroy(): void {
