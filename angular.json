@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "web-socket": {
+    "dev-arena": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -61,10 +61,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "web-socket:build:production"
+              "buildTarget": "dev-arena:build:production"
             },
             "development": {
-              "buildTarget": "web-socket:build:development"
+              "buildTarget": "dev-arena:build:development"
             }
           },
           "defaultConfiguration": "development"

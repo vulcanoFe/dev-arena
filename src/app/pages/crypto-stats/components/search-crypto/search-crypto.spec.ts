@@ -1,8 +1,8 @@
-import { ComponentFixture, TestBed, fakeAsync, tick, flushMicrotasks, flush } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick, flush } from '@angular/core/testing';
 import { SearchCrypto } from './search-crypto';
-import { BinanceService } from '../../services/binance.service';
 import { Router } from '@angular/router';
 import { of, Subject } from 'rxjs';
+import { BinanceService } from '../../services/binance.service';
 
 export class BinanceServiceMock {
   searchCryptos = jasmine.createSpy('searchCryptos').and.returnValue(of([]));

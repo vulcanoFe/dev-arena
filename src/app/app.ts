@@ -10,5 +10,5 @@ import { Footer } from './layout/footer/footer';
   styleUrl: './app.scss'
 })
 export class App {
-  protected readonly title = signal('web-socket');
+  protected readonly title = signal('dev-arena');
 }

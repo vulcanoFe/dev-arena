@@ -2,15 +2,20 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   {
-    path: '',
-    loadComponent: () => import('./pages/home/home').then(m => m.HomeComponent)
+    path: 'crypto-stats',
+    loadComponent: () => import('./pages/crypto-stats/crypto-stats').then(m => m.CryptoStatsComponent)
   },
+	{
+		path: 'crypto-stats/:symbol',
+		loadComponent: () => import('./pages/crypto-stats/crypto-detail/crypto-detail').then(m => m.CryptoDetailComponent)
+	},
   {
-    path: 'crypto/:symbol',
-    loadComponent: () => import('./pages/crypto-detail/crypto-detail').then(m => m.CryptoDetailComponent)
+    path: '',
+    redirectTo: 'crypto-stats',
+    pathMatch: 'full'
   },
   {
     path: '**',
-    redirectTo: ''
+    redirectTo: 'crypto-stats'
   }
 ];
