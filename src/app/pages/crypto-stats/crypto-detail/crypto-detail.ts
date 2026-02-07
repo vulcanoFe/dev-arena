@@ -2,12 +2,12 @@ import { Component, signal, computed, inject, effect, OnDestroy } from '@angular
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { BinanceService } from '../../services/binance.service';
 import { combineLatest, map, switchMap, of } from 'rxjs';
-import { CryptoPricePipe } from '../../pipes/crypto-price-pipe';
-import { CryptoPercentPipe } from '../../pipes/crypto-percent-pipe';
-import { CryptoSymbolPipe } from '../../pipes/crypto-symbol-pipe';
-import { CryptoVolumePipe } from '../../pipes/crypto-volume-pipe';
+import { CryptoPricePipe } from '../pipes/crypto-price-pipe';
+import { CryptoPercentPipe } from '../pipes/crypto-percent-pipe';
+import { CryptoSymbolPipe } from '../pipes/crypto-symbol-pipe';
+import { CryptoVolumePipe } from '../pipes/crypto-volume-pipe';
+import { BinanceService } from '../services/binance.service';
 
 interface PriceHistory {
   price: number;

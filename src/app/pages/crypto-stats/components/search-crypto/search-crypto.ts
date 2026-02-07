@@ -1,8 +1,8 @@
 import { Component, effect, inject, signal } from '@angular/core';
-import { BinanceService } from '../../services/binance.service';
 import { Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged, of, Subject, switchMap, tap } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { BinanceService } from '../../services/binance.service';
 
 @Component({
   selector: 'app-search-crypto',
@@ -81,7 +81,7 @@ export class SearchCrypto {
 
   // Naviga alla pagina di dettaglio di una crypto
   navigateToDetail(symbol: string): void {
-    this.router.navigate(['/crypto', symbol]);
+    this.router.navigate(['/crypto-stats', symbol]);
   }
 
   // Pulisce il campo di ricerca
