@@ -1,8 +1,17 @@
 <header class="sticky top-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur dark:border-slate-800 dark:bg-slate-900/80">
 	<div class="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
+
+		<button (click)="toggleSidenav()" class="text-xl">
+			@if(isOpen()) {x} 
+			@else {☰}
+		</button>
+
+		<!--Page title-->
 		<div class="flex items-center gap-3">
-			<span class="text-sm font-semibold text-slate-700 dark:text-slate-200">Display Crypto</span>
+			<span class="text-sm font-semibold text-slate-700 dark:text-slate-200">{{headerData()?.title}}</span>
 		</div>
+
+		<!--Theme switch-->
 		<div class="flex items-center gap-2">
 			<button
 				type="button"
@@ -11,10 +20,14 @@
 							text-slate-700 shadow-sm transition hover:bg-slate-50
 							focus:outline-none focus:ring-2 focus:ring-blue-400
 							dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">
-				<span *ngIf="isDark(); else light">🌙</span>
-				<ng-template #light>☀️</ng-template>
+				@if (isDark()) {<span>🌙</span>}
+				@else {<span>☀️</span>}
+				<ng-template #light></ng-template>
 				<span class="ml-2 hidden sm:inline">{{ isDark() ? 'Dark' : 'Light' }}</span>
 			</button>
 		</div>
+
 	</div>
 </header>
+
+<app-sidenav [isOpen]="isOpen()" (toggle)="toggleSidenav()"></app-sidenav>

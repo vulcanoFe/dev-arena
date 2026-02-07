@@ -1,0 +1,23 @@
+<!-- OVERLAY -->
+@if(isOpen()) {
+	<div
+		class="fixed inset-0 bg-black/40 z-40"
+		(click)="onToggle()">
+	</div>
+}
+
+<!-- SIDENAV -->
+<div 
+  class="fixed top-0 left-0 h-full w-64 bg-white shadow-xl z-50 dark:bg-slate-800
+        transform transition-transform duration-300"
+  [class.-translate-x-full]="!isOpen()"
+  [class.translate-x-0]="isOpen()">
+
+  <div class="p-4 font-bold border-b">Menu</div>
+
+  <nav class="p-4 space-y-3">
+    <button class="block p-2 w-full rounded hover:bg-gray-100 dark:hover:bg-slate-500">Home</button>
+    <button class="block p-2 w-full rounded hover:bg-gray-100 dark:hover:bg-slate-500">Crypto</button>
+    <button class="block p-2 w-full rounded hover:bg-gray-100 dark:hover:bg-slate-500">Settings</button>
+  </nav>
+</div>
