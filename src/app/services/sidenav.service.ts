@@ -6,7 +6,7 @@ import { SidenavItem } from '../models/sidenav-item.model';
 import { RouteData } from '../models/route-data.model';
 
 @Injectable({ providedIn: 'root' })
-export class RoutesStore {
+export class SidenavService {
 
   private _routes = signal<Route[]>(routes);
 
@@ -25,7 +25,7 @@ export class RoutesStore {
     let acc: Route[] = [route];
     if (route.children) {
       route.children.forEach(c => {
-        acc.push(...this.extractRoute(c)));
+        acc.push(...this.extractRoute(c));
       });
     }
     return acc;
