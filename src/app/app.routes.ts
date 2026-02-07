@@ -1,21 +1,19 @@
 import { Routes } from '@angular/router';
+import { CRYPTO_STATS_ROUTES } from './pages/crypto-stats/crypto-stats.routes';
+import { QUESTION_JOKE_ROUTES } from './pages/question-joke/question-joke.routes';
 
 export const routes: Routes = [
-  {
-    path: 'crypto-stats',
-    loadComponent: () => import('./pages/crypto-stats/crypto-stats').then(m => m.CryptoStatsComponent)
-  },
-	{
-		path: 'crypto-stats/:symbol',
-		loadComponent: () => import('./pages/crypto-stats/crypto-detail/crypto-detail').then(m => m.CryptoDetailComponent)
-	},
+  ...CRYPTO_STATS_ROUTES,   // 👈 feature crypto stats
+	...QUESTION_JOKE_ROUTES,  // 👈 feature question joke
+
+  // default
   {
     path: '',
-    redirectTo: 'crypto-stats',
+    redirectTo: 'question-joke',
     pathMatch: 'full'
   },
   {
     path: '**',
-    redirectTo: 'crypto-stats'
+    redirectTo: 'question-joke'
   }
 ];
