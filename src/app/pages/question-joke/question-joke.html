@@ -1,17 +1,28 @@
 <div class="w-full max-w-md rounded-xl bg-white p-6 shadow-lg space-y-6 dark:bg-slate-800">
 
-	<p class="text-center text-xl font-semibold text-slate-900 dark:text-slate-100">
-		Vuoi continuare?
-	</p>
+  <p class="text-center text-xl font-semibold text-slate-900 dark:text-slate-100">
+    Vuoi continuare?
+  </p>
 
-	<div class="flex gap-4">
-		<button class="flex-1 rounded-lg bg-green-500 py-3 text-white font-semibold hover:bg-green-600 transition">
-			SI
-		</button>
+  <div #container class="relative flex gap-4">
 
-		<button class="flex-1 rounded-lg bg-red-500 py-3 text-white font-semibold hover:bg-red-600 transition">
-			NO
-		</button>
-	</div>
+		<!-- SI -->
+    <button
+      class="flex-1 rounded-lg bg-green-500 py-3 text-white font-semibold hover:bg-green-600 transition">
+      SI
+    </button>
+
+    <!-- NO -->
+    <button
+      #noBtn
+      class="flex-1 rounded-lg bg-red-500 py-3 text-white font-semibold transition-transform duration-150 ease-out"
+      [style.transform]="noTransform()"
+      (mousemove)="onApproach($event)"
+      (touchmove)="onApproach($event)"
+    >
+      NO
+    </button>
+
+  </div>
 
 </div>
