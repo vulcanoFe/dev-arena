@@ -20,12 +20,12 @@ export class FakeCaptcha {
   error = signal(false);
 
   images: CaptchaImage[] = [
-    { id: 1, url: 'https://picsum.photos/id/1025/200', isCorrect: true,  selected: false }, // cane
-    { id: 2, url: 'https://picsum.photos/id/1062/200', isCorrect: true, selected: false },
-    { id: 3, url: 'https://picsum.photos/id/237/200',  isCorrect: true,  selected: false }, // cane
-    { id: 4, url: 'https://picsum.photos/id/1040/200', isCorrect: false, selected: false },
-    { id: 5, url: 'https://picsum.photos/id/1084/200', isCorrect: false, selected: false },
-    { id: 6, url: 'https://picsum.photos/id/1024/200', isCorrect: false,  selected: false }, // cane
+    { id: 1, url: 'barcellona.jpg', isCorrect: true, selected: false },
+    { id: 2, url: 'venezia.jpg', isCorrect: false, selected: false },
+    { id: 3, url: 'madeira.jpg', isCorrect: true, selected: false },
+    { id: 4, url: 'parigi.jpg', isCorrect: false, selected: false },
+    { id: 5, url: 'parga.jpg', isCorrect: true, selected: false },
+    { id: 6, url: 'amsterdam.jpg', isCorrect: false, selected: false },
   ];
 
   toggle(img: CaptchaImage) {

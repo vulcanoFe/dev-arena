@@ -9,46 +9,55 @@ import { FakeCaptcha } from './components/fake-captcha/fake-captcha';
 })
 export class QuestionJoke {
 
-  // signal ViewChild
-  container = viewChild<ElementRef<HTMLDivElement>>('container');
-  noBtn = viewChild<ElementRef<HTMLButtonElement>>('noBtn');
+  captcha = signal(false);
 
-  noTransform = signal('translate(0px, 0px)');
-	captcha = signal(false);
+  noScale = signal(1);
+  yesScale = signal(1);
 
-  private lastMove = 0;
-
-	onApproach(event: MouseEvent | TouchEvent) {
-    const containerEl = this.container()?.nativeElement;
-    const noBtnEl = this.noBtn()?.nativeElement;
-
-    if (!containerEl || !noBtnEl) return; // sicurezza
-
-    const now = Date.now();
-    if (now - this.lastMove < 120) return;
-    this.lastMove = now;
-
-    const containerRect = containerEl.getBoundingClientRect();
-    const btnRect = noBtnEl.getBoundingClientRect();
-
-    const maxX = containerRect.width - btnRect.width;
-    const maxY = 120;
-
-    let x = this.random(-maxX / 2, maxX / 2);
-    let y = this.random(-maxY, maxY);
-
-    x = Math.max(-maxX / 2, Math.min(x, maxX / 2));
-    y = Math.max(-maxY, Math.min(y, maxY));
-
-    this.noTransform.set(`translate(${x}px, ${y}px)`);
+  captchaVerified(verified:boolean):void {
+    this.captcha.set(verified);
   }
 
-  private random(min: number, max: number): number {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+  onNoClick() {
+    this.noScale.update(v => v * 0.5);
+    this.yesScale.update(v => v * 2);
+
+    // opzionale: quando diventa troppo piccolo, sparisce
+    if (this.noScale() < 0.15) {
+      this.noScale.set(0);
+    }
   }
 
-	captchaVerified(verified:boolean):void {
-		this.captcha.set(verified);
+	showPopup = signal(false);
+	showHearts = signal(false);
+
+	// array cuori con posizioni e delay pre-calcolati
+	hearts = signal<{ left: number; delay: number; emoji: string }[]>([]);
+
+	onYesClick() {
+		this.showPopup.set(true);
 	}
 
+	closePopup() {
+		this.showPopup.set(false);
+
+		this.generateHearts();
+		this.showHearts.set(true);
+
+		setTimeout(() => {
+			this.showHearts.set(false);
+		}, 4000);
+	}
+
+	private generateHearts() {
+		const emojis = ['❤️','💖','💕','💘','💗','💞','💓','💝'];
+
+		const hearts = Array.from({ length: 14 }).map(() => ({
+			left: Math.random() * 100,        // %
+			delay: Math.random() * 1.5,       // s
+			emoji: emojis[Math.floor(Math.random() * emojis.length)]
+		}));
+
+		this.hearts.set(hearts);
+	}
 }
