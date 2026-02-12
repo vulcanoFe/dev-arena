@@ -1,29 +1,36 @@
-name: Deploy to GitHub Pages
+name: Deploy Angular to GitHub Pages
 
 on:
   push:
-    branches: [main] # o master, a seconda del tuo branch
+    branches:
+      - master # ogni push su master triggera il deploy
 
 jobs:
-  build-and-deploy:
+  build-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      # 1️⃣ Checkout del repo
+      - name: Checkout Repo
+        uses: actions/checkout@v3
 
-      - name: Setup Node.js
+      # 2️⃣ Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '20' # versione Node
 
-      - name: Install dependencies
+      # 3️⃣ Install dependencies
+      - name: Install Dependencies
         run: npm ci
 
-      - name: Build
-        run: npm run build -- --base-href=/dev-arena/
+      # 4️⃣ Build Angular
+      - name: Build Angular
+        run: npm run build -- --prod
 
+      # 5️⃣ Deploy su GitHub Pages
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v6
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist/dev-arena
+          publish_dir: ./dist/dev-arena # cartella di output Angular
