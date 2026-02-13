@@ -24,8 +24,11 @@ export class FakeCaptcha {
     { id: 2, url: 'venezia.jpg', isCorrect: false, selected: false },
     { id: 3, url: 'madeira.jpg', isCorrect: true, selected: false },
     { id: 4, url: 'parigi.jpg', isCorrect: false, selected: false },
-    { id: 5, url: 'parga.jpg', isCorrect: true, selected: false },
+    { id: 5, url: 'new-york.jpg', isCorrect: false, selected: false },
     { id: 6, url: 'amsterdam.jpg', isCorrect: false, selected: false },
+		{ id: 7, url: 'muragliacinese.jpg', isCorrect: false, selected: false },
+    { id: 8, url: 'machupicchu.jpg', isCorrect: false, selected: false },
+    { id: 9, url: 'parga.jpg', isCorrect: true, selected: false },
   ];
 
   toggle(img: CaptchaImage) {
