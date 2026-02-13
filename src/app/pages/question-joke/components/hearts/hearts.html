@@ -1,0 +1,11 @@
+<div class="pointer-events-none fixed inset-0 z-[60] overflow-hidden">
+	@for(h of hearts(); track $index) {
+		<div
+			class="absolute bottom-0 text-pink-500 text-3xl animate-float"
+			[style.left.%]="h.left"
+			[style.animationDelay.s]="h.delay"
+		>
+			{{ h.emoji }}
+		</div>
+	}
+</div>

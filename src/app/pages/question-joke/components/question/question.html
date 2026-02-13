@@ -1,0 +1,23 @@
+<div class="w-full max-w-md rounded-xl bg-white p-6 shadow-lg space-y-6 dark:bg-slate-800">
+	<p class="text-center text-xl font-semibold text-slate-900 dark:text-slate-100">
+		Vuoi pagare tu la pizza stasera?🍕
+	</p>
+	<div class="relative flex gap-4">
+		<!-- SI -->
+		<button
+			class="flex-1 rounded-lg bg-green-500 py-3 text-white font-semibold transition-transform duration-300 ease-out hover:bg-green-600"
+			[style.transform]="'scale(' + yesScale() + ')'"
+			(click)="onYesClick()"
+		>
+			SI
+		</button>
+		<!-- NO -->
+		<button
+			class="flex-1 rounded-lg bg-red-500 py-3 text-white font-semibold transition-transform duration-300 ease-out"
+			[style.transform]="'scale(' + noScale() + ')'"
+			(click)="onNoClick()"
+		>
+			NO
+		</button>
+	</div>
+</div>

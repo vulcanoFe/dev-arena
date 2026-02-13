@@ -1,62 +1,50 @@
-import { Component, signal } from '@angular/core';
+import { Component, effect, signal, viewChild } from '@angular/core';
 import { FakeCaptcha } from './components/fake-captcha/fake-captcha';
+import { OkPopup } from './components/ok-popup/ok-popup';
+import { Hearts } from './components/hearts/hearts';
+import { Question } from './components/question/question';
+import { FinalYes } from './components/final-yes/final-yes';
 
 @Component({
   selector: 'app-question-joke',
-  imports: [FakeCaptcha],
+  imports: [FakeCaptcha, OkPopup, Hearts, Question, FinalYes],
   templateUrl: './question-joke.html',
   styleUrl: './question-joke.scss',
 })
 export class QuestionJoke {
 
+	// gestione captcha
   captcha = signal(false);
-  noScale = signal(1);
-  yesScale = signal(1);
+
+	// gestione popup question
+	showPopup = signal(false);
+
+	// gestione Hearts
+	showHearts = signal(false);
+  hearts = viewChild(Hearts);
+	heartsEffect = effect(() => {
+		const hearts = this.hearts();
+		if (hearts) { hearts.generateHearts(); }
+	});
+
+	// gestione final YES
+	finalYes = signal(false);
 
   captchaVerified(verified:boolean):void {
     this.captcha.set(verified);
   }
 
-  onNoClick() {
-    this.noScale.update(v => v * 0.5);
-    this.yesScale.update(v => v * 2);
-
-    // opzionale: quando diventa troppo piccolo, sparisce
-    if (this.noScale() < 0.15) {
-      this.noScale.set(0);
-    }
-  }
-
-	showPopup = signal(false);
-	showHearts = signal(false);
-
-	// array cuori con posizioni e delay pre-calcolati
-	hearts = signal<{ left: number; delay: number; emoji: string }[]>([]);
-
-	onYesClick() {
+	questionYesClicked() {
 		this.showPopup.set(true);
 	}
 
 	closePopup() {
 		this.showPopup.set(false);
-
-		this.generateHearts();
 		this.showHearts.set(true);
-
+		this.finalYes.set(true);
 		setTimeout(() => {
 			this.showHearts.set(false);
 		}, 4000);
 	}
 
-	private generateHearts() {
-		const emojis = ['❤️','💖','💕','💘','💗','💞','💓','💝'];
-
-		const hearts = Array.from({ length: 14 }).map(() => ({
-			left: Math.random() * 100,        // %
-			delay: Math.random() * 1.5,       // s
-			emoji: emojis[Math.floor(Math.random() * emojis.length)]
-		}));
-
-		this.hearts.set(hearts);
-	}
 }
