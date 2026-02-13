@@ -1,81 +1,16 @@
-@if(!captcha()) {
-	<app-fake-captcha (verified)="captchaVerified($event)"></app-fake-captcha>
-}
-@else{
-<div class="w-full max-w-md rounded-xl bg-white p-6 shadow-lg space-y-6 dark:bg-slate-800">
-    
-    <p class="text-center text-xl font-semibold text-slate-900 dark:text-slate-100">
-      Vuoi pagare tu la pizza stasera?🍕
-    </p>
+<div class="overflow-hidden rounded-lg">
 
-    <div class="relative flex gap-4">
-
-      <!-- SI -->
-      <button
-        class="flex-1 rounded-lg bg-green-500 py-3 text-white font-semibold transition-transform duration-300 ease-out hover:bg-green-600"
-        [style.transform]="'scale(' + yesScale() + ')'"
-				(click)="onYesClick()"
-      >
-        SI
-      </button>
-
-      <!-- NO -->
-      <button
-        class="flex-1 rounded-lg bg-red-500 py-3 text-white font-semibold transition-transform duration-300 ease-out"
-        [style.transform]="'scale(' + noScale() + ')'"
-        (click)="onNoClick()"
-      >
-        NO
-      </button>
-
-			@if(showPopup()) {
-  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-    
-    <div class="w-full max-w-sm rounded-2xl bg-white p-6 text-center shadow-2xl space-y-4
-                animate-[scaleIn_0.3s_ease-out]">
-
-      <div class="text-4xl">🍕😎</div>
-
-      <p class="text-lg font-semibold text-slate-800">
-        Errore 403: Accesso negato
-      </p>
-
-      <p class="text-slate-600">
-        Pagamento automatico a carico del fidanzato
-      </p>
-
-      <p class="text-pink-500 font-bold text-xl">
-        Ti amo amore mio! ❤️
-      </p>
-
-      <button
-        class="mt-4 w-full rounded-lg bg-green-500 py-2 text-white font-semibold hover:bg-green-600 transition"
-        (click)="closePopup()"
-      >
-        OK 😘
-      </button>
-
-    </div>
-  </div>
-}
-
-    </div>
-  </div>
-}
-
-
-@if(showHearts()) {
-  <div class="pointer-events-none fixed inset-0 z-[60] overflow-hidden">
-
-    @for(h of hearts(); track $index) {
-      <div
-        class="absolute bottom-0 text-pink-500 text-3xl animate-float"
-        [style.left.%]="h.left"
-        [style.animationDelay.s]="h.delay"
-      >
-        {{ h.emoji }}
-      </div>
-    }
-
-  </div>
-}
+	@if(!captcha()) {
+		<app-fake-captcha (verified)="captchaVerified($event)"></app-fake-captcha>
+	}
+	@else if(!finalYes()){
+		<app-question (yesClick)="questionYesClicked()"></app-question>
+	}
+	@else {
+		<app-final-yes></app-final-yes>
+	}
+	
+	@if(showPopup()) { <app-ok-popup (closePopup)="closePopup()"></app-ok-popup> }
+	
+	@if(showHearts()) { <app-hearts></app-hearts> }
+</div>
