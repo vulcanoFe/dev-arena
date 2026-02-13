@@ -1,13 +1,16 @@
-@if(!captcha()) {
-	<app-fake-captcha (verified)="captchaVerified($event)"></app-fake-captcha>
-}
-@else if(!finalYes()){
-	<app-question (yesClick)="questionYesClicked()"></app-question>
-}
-@else {
-	<app-final-yes></app-final-yes>
-}
+<div class="overflow-hidden rounded-lg">
 
-@if(showPopup()) { <app-ok-popup (closePopup)="closePopup()"></app-ok-popup> }
-
-@if(showHearts()) { <app-hearts></app-hearts> }
+	@if(!captcha()) {
+		<app-fake-captcha (verified)="captchaVerified($event)"></app-fake-captcha>
+	}
+	@else if(!finalYes()){
+		<app-question (yesClick)="questionYesClicked()"></app-question>
+	}
+	@else {
+		<app-final-yes></app-final-yes>
+	}
+	
+	@if(showPopup()) { <app-ok-popup (closePopup)="closePopup()"></app-ok-popup> }
+	
+	@if(showHearts()) { <app-hearts></app-hearts> }
+</div>
