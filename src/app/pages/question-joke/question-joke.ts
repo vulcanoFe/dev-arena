@@ -1,4 +1,4 @@
-import { Component, ElementRef, signal, viewChild } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { FakeCaptcha } from './components/fake-captcha/fake-captcha';
 
 @Component({
@@ -10,7 +10,6 @@ import { FakeCaptcha } from './components/fake-captcha/fake-captcha';
 export class QuestionJoke {
 
   captcha = signal(false);
-
   noScale = signal(1);
   yesScale = signal(1);
 
