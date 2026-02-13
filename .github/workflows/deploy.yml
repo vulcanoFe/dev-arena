@@ -25,7 +25,7 @@ jobs:
         run: npm run build:prod
 
       - name: Copy index.html to 404.html
-      - run: cp dist/dev-arena/browser/index.html dist/dev-arena/browser/404.html
+        run: cp dist/dev-arena/browser/index.html dist/dev-arena/browser/404.html
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
